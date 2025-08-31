@@ -4,23 +4,29 @@ declare module "next-auth" {
       id: string
       email: string
       name: string
-      profileId: string
-      memberType: "14-chokhra" | "other"
+      role: string
+      choklaId: string | null
+      villageId: string | null
     }
+    accessToken: string
   }
 
   interface User {
     id: string
     email: string
     name: string
-    profileId: string
-    memberType: "14-chokhra" | "other"
+    token: string
+    role: string
+    choklaId: string | null
+    villageId: string | null
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    profileId: string
-    memberType: "14-chokhra" | "other"
+    accessToken: string
+    role: string
+    choklaId: string | null
+    villageId: string | null
   }
 }

@@ -31,15 +31,17 @@ const authOptions: NextAuthOptions = {
             return null
           }
 
-          const user = await response.json()
+          const data = await response.json()
 
-          if (user && user.id) {
+          if (data && data.userId && data.token) {
             return {
-              id: user.id,
-              email: user.email,
-              name: user.name || user.email,
-              profileId: user.profileId,
-              memberType: user.memberType,
+              id: data.userId,
+              email: data.email,
+              name: data.email, // Using email as name since name is not provided
+              token: data.token,
+              role: data.role,
+              choklaId: data.choklaId,
+              villageId: data.villageId,
             }
           }
 
@@ -57,16 +59,20 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.profileId = user.profileId
-        token.memberType = user.memberType
+        token.accessToken = user.token
+        token.role = user.role
+        token.choklaId = user.choklaId
+        token.villageId = user.villageId
       }
       return token
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.sub!
-        session.user.profileId = token.profileId as string
-        session.user.memberType = token.memberType as string
+        session.accessToken = token.accessToken as string
+        session.user.role = token.role as string
+        session.user.choklaId = token.choklaId as string | null
+        session.user.villageId = token.villageId as string | null
       }
       return session
     },

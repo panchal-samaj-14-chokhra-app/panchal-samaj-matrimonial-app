@@ -1,25 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Menu, X, User, LogIn, LogOut, Settings } from "lucide-react"
-import { getCurrentUser, logout, type User as AuthUser } from "@/lib/mock-auth"
+import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
-  const [user, setUser] = useState<AuthUser | null>(null)
+  const { data: session, status } = useSession()
   const router = useRouter()
 
-  useEffect(() => {
-    setUser(getCurrentUser())
-  }, [])
-
-  const handleLogout = () => {
-    logout()
-    setUser(null)
+  const handleLogout = async () => {
+    await signOut({ redirect: false })
     router.push("/")
     setIsOpen(false)
   }
@@ -49,9 +44,9 @@ export function Navigation() {
               Profiles
             </Link>
             <div className="flex items-center space-x-3">
-              {user ? (
+              {session?.user ? (
                 <>
-                  <span className="text-sm text-gray-600">नमस्ते, {user.name}</span>
+                  <span className="text-sm text-gray-600">नमस्ते, {session.user.name}</span>
                   <Link href="/profile/settings">
                     <Button
                       variant="outline"
@@ -129,9 +124,9 @@ export function Navigation() {
                 Profiles
               </Link>
               <div className="border-t border-orange-100 pt-3 mt-3 space-y-2">
-                {user ? (
+                {session?.user ? (
                   <>
-                    <div className="px-3 py-2 text-sm text-gray-600">नमस्ते, {user.name}</div>
+                    <div className="px-3 py-2 text-sm text-gray-600">नमस्ते, {session.user.name}</div>
                     <Link
                       href="/profile/settings"
                       className="block px-3 py-2 text-orange-600 hover:bg-orange-50 rounded-md font-medium"
