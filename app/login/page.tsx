@@ -1,8 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { authenticateUser, setCurrentUser } from "@/lib/mock-auth"
 import { BackButton } from "@/components/back-button"
 
 export default function LoginPage() {
@@ -25,13 +24,20 @@ export default function LoginPage() {
     setIsLoading(true)
     setError("")
 
-    const user = authenticateUser(email, password)
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      })
 
-    if (user) {
-      setCurrentUser(user)
-      router.push("/profiles")
-    } else {
-      setError("गलत ईमेल या पासवर्ड")
+      if (result?.error) {
+        setError("गलत ईमेल या पासवर्ड")
+      } else if (result?.ok) {
+        router.push("/profiles")
+      }
+    } catch (error) {
+      setError("लॉगिन में त्रुटि हुई")
     }
 
     setIsLoading(false)
@@ -54,18 +60,6 @@ export default function LoginPage() {
           </CardHeader>
           <form onSubmit={handleLogin}>
             <CardContent className="space-y-4">
-              <div className="bg-orange-50 p-3 rounded-lg text-sm">
-                <p className="font-semibold text-orange-800 mb-2">डेमो क्रेडेंशियल्स:</p>
-                <div className="space-y-1 text-orange-700">
-                  <p>
-                    <strong>ईमेल:</strong> demo@panchalsamaj.com
-                  </p>
-                  <p>
-                    <strong>पासवर्ड:</strong> demo123
-                  </p>
-                </div>
-              </div>
-
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-md text-sm">{error}</div>
               )}
