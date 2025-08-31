@@ -1,6 +1,6 @@
 import { authService } from "@/lib/api-services"
-import { useMutation } from "react-query"
-import { toast } from "react-toastify"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "@/hooks/use-toast"
 
 export const useSignupFlow = () => {
   const sendOtpMutation = useMutation({
