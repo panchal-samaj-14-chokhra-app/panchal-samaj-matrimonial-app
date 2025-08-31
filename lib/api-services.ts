@@ -47,6 +47,24 @@ export interface SignupData {
   familyId?: string
 }
 
+export interface SendOtpRequest {
+  email: string
+}
+
+export interface VerifyOtpRequest {
+  email: string
+  otp: string
+}
+
+export interface RegisterRequest {
+  email: string
+  password: string
+  fullName: string
+  mobileNumber: string
+  globalRole: string
+  choklaId: string
+}
+
 // API Service Functions
 export const authService = {
   // Login user
@@ -81,6 +99,24 @@ export const authService = {
   // Get current user
   getCurrentUser: async (): Promise<User> => {
     const response = await api.get("/auth/me")
+    return response.data
+  },
+
+  // Send OTP for signup
+  sendOtp: async (data: SendOtpRequest): Promise<{ message: string }> => {
+    const response = await api.post("/auth/send-otp", data)
+    return response.data
+  },
+
+  // Verify OTP for signup
+  verifyOtpSignup: async (data: VerifyOtpRequest): Promise<{ message: string; verified: boolean }> => {
+    const response = await api.post("/auth/verify-otp-signup", data)
+    return response.data
+  },
+
+  // Register user after OTP verification
+  register: async (data: RegisterRequest): Promise<{ user: User; token: string }> => {
+    const response = await api.post("/auth/register", data)
     return response.data
   },
 }

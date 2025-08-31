@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Mail, Shield, UserPlus } from "lucide-react"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
+import { useSignupFlow } from "@/hooks/use-query-mutations"
 
 export default function ChokhraMemberSignup() {
   const router = useRouter()
@@ -25,35 +26,21 @@ export default function ChokhraMemberSignup() {
     password: "",
     confirmPassword: "",
   })
-  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+
+  const { sendOtp, verifyOtp, register } = useSignupFlow()
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
 
-    setIsLoading(true)
     setError("")
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/send-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      })
-
-      if (response.ok) {
-        setCurrentStep(2)
-      } else {
-        const errorData = await response.json()
-        setError(errorData.message || "OTP भेजने में त्रुटि हुई")
-      }
-    } catch (error) {
-      setError("नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।")
-    } finally {
-      setIsLoading(false)
+      await sendOtp.mutateAsync({ email })
+      setCurrentStep(2)
+    } catch (error: any) {
+      setError(error.response?.data?.message || "OTP भेजने में त्रुटि हुई")
     }
   }
 
@@ -61,28 +48,13 @@ export default function ChokhraMemberSignup() {
     e.preventDefault()
     if (!otp || otp.length !== 6) return
 
-    setIsLoading(true)
     setError("")
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify-otp-signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, otp }),
-      })
-
-      if (response.ok) {
-        setCurrentStep(3)
-      } else {
-        const errorData = await response.json()
-        setError(errorData.message || "OTP सत्यापन में त्रुटि हुई")
-      }
-    } catch (error) {
-      setError("नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।")
-    } finally {
-      setIsLoading(false)
+      await verifyOtp.mutateAsync({ email, otp })
+      setCurrentStep(3)
+    } catch (error: any) {
+      setError(error.response?.data?.message || "OTP सत्यापन में त्रुटि हुई")
     }
   }
 
@@ -90,35 +62,20 @@ export default function ChokhraMemberSignup() {
     e.preventDefault()
     if (!formData.password || !formData.mobile || formData.password !== formData.confirmPassword) return
 
-    setIsLoading(true)
     setError("")
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password: formData.password,
-          fullName: formData.memberName,
-          mobileNumber: formData.mobile,
-          globalRole: "MATRIMONIAL_USER",
-          choklaId: formData.familyId,
-        }),
+      await register.mutateAsync({
+        email,
+        password: formData.password,
+        fullName: formData.memberName,
+        mobileNumber: formData.mobile,
+        globalRole: "MATRIMONIAL_USER",
+        choklaId: formData.familyId,
       })
-
-      if (response.ok) {
-        router.push("/login")
-      } else {
-        const errorData = await response.json()
-        setError(errorData.message || "पंजीकरण में त्रुटि हुई")
-      }
-    } catch (error) {
-      setError("नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।")
-    } finally {
-      setIsLoading(false)
+      router.push("/login")
+    } catch (error: any) {
+      setError(error.response?.data?.message || "पंजीकरण में त्रुटि हुई")
     }
   }
 
@@ -190,8 +147,12 @@ export default function ChokhraMemberSignup() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700" disabled={isLoading || !email}>
-                {isLoading ? "OTP भेजा जा रहा है..." : "OTP भेजें"}
+              <Button
+                type="submit"
+                className="w-full bg-orange-600 hover:bg-orange-700"
+                disabled={sendOtp.isLoading || !email}
+              >
+                {sendOtp.isLoading ? "OTP भेजा जा रहा है..." : "OTP भेजें"}
               </Button>
             </CardFooter>
           </form>
@@ -235,9 +196,9 @@ export default function ChokhraMemberSignup() {
               <Button
                 type="submit"
                 className="w-full bg-orange-600 hover:bg-orange-700"
-                disabled={isLoading || otp.length !== 6}
+                disabled={verifyOtp.isLoading || otp.length !== 6}
               >
-                {isLoading ? "सत्यापन हो रहा है..." : "OTP सत्यापित करें"}
+                {verifyOtp.isLoading ? "सत्यापन हो रहा है..." : "OTP सत्यापित करें"}
               </Button>
             </CardFooter>
           </form>
@@ -321,7 +282,7 @@ export default function ChokhraMemberSignup() {
                 type="submit"
                 className="w-full bg-orange-600 hover:bg-orange-700"
                 disabled={
-                  isLoading ||
+                  register.isLoading ||
                   !formData.password ||
                   !formData.mobile ||
                   formData.password !== formData.confirmPassword ||
@@ -329,7 +290,7 @@ export default function ChokhraMemberSignup() {
                   !formData.familyId
                 }
               >
-                {isLoading ? "पंजीकरण हो रहा है..." : "पंजीकरण पूरा करें"}
+                {register.isLoading ? "पंजीकरण हो रहा है..." : "पंजीकरण पूरा करें"}
               </Button>
               <div className="text-center text-sm text-gray-600">
                 पहले से खाता है?{" "}
