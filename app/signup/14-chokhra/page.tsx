@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Mail, Shield, UserPlus } from "lucide-react"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 
@@ -27,17 +26,35 @@ export default function ChokhraMemberSignup() {
     confirmPassword: "",
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
 
     setIsLoading(true)
-    // Simulate API call to send OTP
-    setTimeout(() => {
+    setError("")
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/send-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      if (response.ok) {
+        setCurrentStep(2)
+      } else {
+        const errorData = await response.json()
+        setError(errorData.message || "OTP भेजने में त्रुटि हुई")
+      }
+    } catch (error) {
+      setError("नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।")
+    } finally {
       setIsLoading(false)
-      setCurrentStep(2)
-    }, 1500)
+    }
   }
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
@@ -45,11 +62,28 @@ export default function ChokhraMemberSignup() {
     if (!otp || otp.length !== 6) return
 
     setIsLoading(true)
-    // Simulate API call to verify OTP
-    setTimeout(() => {
+    setError("")
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify-otp-signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, otp }),
+      })
+
+      if (response.ok) {
+        setCurrentStep(3)
+      } else {
+        const errorData = await response.json()
+        setError(errorData.message || "OTP सत्यापन में त्रुटि हुई")
+      }
+    } catch (error) {
+      setError("नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।")
+    } finally {
       setIsLoading(false)
-      setCurrentStep(3)
-    }, 1500)
+    }
   }
 
   const handleCompleteRegistration = async (e: React.FormEvent) => {
@@ -57,11 +91,35 @@ export default function ChokhraMemberSignup() {
     if (!formData.password || !formData.mobile || formData.password !== formData.confirmPassword) return
 
     setIsLoading(true)
-    // Simulate API call to complete registration
-    setTimeout(() => {
+    setError("")
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password: formData.password,
+          fullName: formData.memberName,
+          mobileNumber: formData.mobile,
+          globalRole: "MATRIMONIAL_USER",
+          choklaId: formData.familyId,
+        }),
+      })
+
+      if (response.ok) {
+        router.push("/login")
+      } else {
+        const errorData = await response.json()
+        setError(errorData.message || "पंजीकरण में त्रुटि हुई")
+      }
+    } catch (error) {
+      setError("नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।")
+    } finally {
       setIsLoading(false)
-      router.push("/login")
-    }, 2000)
+    }
   }
 
   const StepIndicator = () => (
@@ -107,6 +165,10 @@ export default function ChokhraMemberSignup() {
           </CardDescription>
           <StepIndicator />
         </CardHeader>
+
+        {error && (
+          <div className="mx-6 mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>
+        )}
 
         {currentStep === 1 && (
           <form onSubmit={handleSendOTP}>
@@ -190,30 +252,29 @@ export default function ChokhraMemberSignup() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="familyId">पारिवारिक आईडी</Label>
+                <Label htmlFor="familyId">चोखरा आईडी</Label>
                 <Input
                   id="familyId"
                   type="text"
                   value={formData.familyId}
                   onChange={(e) => setFormData({ ...formData, familyId: e.target.value })}
-                  placeholder="आपकी पारिवारिक आईडी दर्ज करें"
+                  placeholder="आपकी चोखरा आईडी दर्ज करें"
                   className="border-orange-200 focus:border-orange-400"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="memberName">सदस्य का नाम चुनें</Label>
-                <Select onValueChange={(value) => setFormData({ ...formData, memberName: value })}>
-                  <SelectTrigger className="border-orange-200 focus:border-orange-400">
-                    <SelectValue placeholder="परिवारजनों की सूची से नाम चुनें" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="member1">राज पंचाल</SelectItem>
-                    <SelectItem value="member2">सुनीता पंचाल</SelectItem>
-                    <SelectItem value="member3">अमित पंचाल</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="memberName">पूरा नाम</Label>
+                <Input
+                  id="memberName"
+                  type="text"
+                  value={formData.memberName}
+                  onChange={(e) => setFormData({ ...formData, memberName: e.target.value })}
+                  placeholder="आपका पूरा नाम दर्ज करें"
+                  className="border-orange-200 focus:border-orange-400"
+                  required
+                />
               </div>
 
               <div className="space-y-2">
@@ -260,7 +321,12 @@ export default function ChokhraMemberSignup() {
                 type="submit"
                 className="w-full bg-orange-600 hover:bg-orange-700"
                 disabled={
-                  isLoading || !formData.password || !formData.mobile || formData.password !== formData.confirmPassword
+                  isLoading ||
+                  !formData.password ||
+                  !formData.mobile ||
+                  formData.password !== formData.confirmPassword ||
+                  !formData.memberName ||
+                  !formData.familyId
                 }
               >
                 {isLoading ? "पंजीकरण हो रहा है..." : "पंजीकरण पूरा करें"}
