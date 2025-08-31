@@ -248,7 +248,7 @@ export default function AboutPage() {
               <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">हमारा मिशन</h2>
               <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
                 पंचाल समाज मैट्रिमोनियल का मिशन है हमारे समुदाय के युवाओं को उनके आदर्श जीवनसाथी खोजने में सहायता करना। हम पारंपरिक
-                मूल्यों और आधुनिक तकनीक का संयोजन करके एक विश्वसनीय और सुरक्षित मंच प्रदान करते हैं।
+                मूल्यों ��र आधुनिक तकनीक का संयोजन करके एक विश्वसनीय और सुरक्षित मंच प्रदान करते हैं।
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 हमारा लक्ष्य है कि हर विवाह खुशहाल, स्थायी और समुदाय की मजबूती में योगदान देने वाला हो। हम न केवल रिश्ते जोड़ते हैं बल्कि
