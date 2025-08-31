@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 import { FloatingNav } from "@/components/floating-nav"
+import { QueryProvider } from "@/components/providers/query-provider"
 
 export const metadata: Metadata = {
   title: "पंचाल समाज मैट्रिमोनियल | Panchal Samaj Matrimonial",
@@ -28,8 +29,10 @@ html {
         `}</style>
       </head>
       <body>
-        {children}
-        <FloatingNav />
+        <QueryProvider>
+          {children}
+          <FloatingNav />
+        </QueryProvider>
       </body>
     </html>
   )

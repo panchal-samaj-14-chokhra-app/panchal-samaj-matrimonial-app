@@ -1,0 +1,181 @@
+import api from "./axios-config"
+
+// Type definitions
+export interface User {
+  id: string
+  name: string
+  email: string
+  phone: string
+  profileId: string
+  memberType: "14-chokhra" | "other"
+  isApproved: boolean
+  createdAt: string
+}
+
+export interface Profile {
+  id: string
+  profileId: string
+  userId: string
+  name: string
+  age: number
+  gender: "male" | "female"
+  occupation: string
+  education: string
+  location: string
+  familyDetails: string
+  preferences: string
+  photos: string[]
+  isActive: boolean
+  isMarried: boolean
+  isHidden: boolean
+  contactVisible: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface LoginCredentials {
+  email: string
+  password: string
+}
+
+export interface SignupData {
+  name: string
+  email: string
+  phone: string
+  password: string
+  memberType: "14-chokhra" | "other"
+  familyId?: string
+}
+
+// API Service Functions
+export const authService = {
+  // Login user
+  login: async (credentials: LoginCredentials): Promise<{ user: User; token: string }> => {
+    const response = await api.post("/auth/login", credentials)
+    return response.data
+  },
+
+  // Register new user
+  signup: async (data: SignupData): Promise<{ user: User; token?: string }> => {
+    const response = await api.post("/auth/signup", data)
+    return response.data
+  },
+
+  // Logout user
+  logout: async (): Promise<void> => {
+    await api.post("/auth/logout")
+  },
+
+  // Forgot password
+  forgotPassword: async (email: string): Promise<{ message: string }> => {
+    const response = await api.post("/auth/forgot-password", { email })
+    return response.data
+  },
+
+  // Reset password
+  resetPassword: async (token: string, password: string): Promise<{ message: string }> => {
+    const response = await api.post("/auth/reset-password", { token, password })
+    return response.data
+  },
+
+  // Get current user
+  getCurrentUser: async (): Promise<User> => {
+    const response = await api.get("/auth/me")
+    return response.data
+  },
+}
+
+export const profileService = {
+  // Get all profiles with filters
+  getProfiles: async (filters?: {
+    gender?: string
+    ageMin?: number
+    ageMax?: number
+    location?: string
+    education?: string
+    occupation?: string
+    page?: number
+    limit?: number
+  }): Promise<{ profiles: Profile[]; total: number; page: number; totalPages: number }> => {
+    const response = await api.get("/profiles", { params: filters })
+    return response.data
+  },
+
+  // Get profile by ID
+  getProfile: async (id: string): Promise<Profile> => {
+    const response = await api.get(`/profiles/${id}`)
+    return response.data
+  },
+
+  // Create new profile
+  createProfile: async (
+    data: Omit<Profile, "id" | "profileId" | "userId" | "createdAt" | "updatedAt">,
+  ): Promise<Profile> => {
+    const response = await api.post("/profiles", data)
+    return response.data
+  },
+
+  // Update profile
+  updateProfile: async (id: string, data: Partial<Profile>): Promise<Profile> => {
+    const response = await api.put(`/profiles/${id}`, data)
+    return response.data
+  },
+
+  // Delete profile
+  deleteProfile: async (id: string): Promise<void> => {
+    await api.delete(`/profiles/${id}`)
+  },
+
+  // Upload profile photos
+  uploadPhotos: async (profileId: string, files: File[]): Promise<{ photos: string[] }> => {
+    const formData = new FormData()
+    files.forEach((file) => formData.append("photos", file))
+
+    const response = await api.post(`/profiles/${profileId}/photos`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+    return response.data
+  },
+
+  // Get user's own profile
+  getMyProfile: async (): Promise<Profile> => {
+    const response = await api.get("/profiles/me")
+    return response.data
+  },
+}
+
+export const adminService = {
+  // Get pending approvals
+  getPendingApprovals: async (): Promise<User[]> => {
+    const response = await api.get("/admin/pending-approvals")
+    return response.data
+  },
+
+  // Approve user
+  approveUser: async (userId: string): Promise<void> => {
+    await api.post(`/admin/approve-user/${userId}`)
+  },
+
+  // Reject user
+  rejectUser: async (userId: string, reason: string): Promise<void> => {
+    await api.post(`/admin/reject-user/${userId}`, { reason })
+  },
+
+  // Get all users
+  getAllUsers: async (): Promise<User[]> => {
+    const response = await api.get("/admin/users")
+    return response.data
+  },
+
+  // Get analytics
+  getAnalytics: async (): Promise<{
+    totalUsers: number
+    totalProfiles: number
+    activeProfiles: number
+    pendingApprovals: number
+    marriedProfiles: number
+  }> => {
+    const response = await api.get("/admin/analytics")
+    return response.data
+  },
+}
