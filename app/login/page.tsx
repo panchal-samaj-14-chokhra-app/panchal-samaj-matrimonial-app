@@ -2,7 +2,6 @@
 
 import type React from "react"
 import { useState } from "react"
-import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -25,19 +24,26 @@ export default function LoginPage() {
     setError("")
 
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
       })
 
-      if (result?.error) {
-        setError("गलत ईमेल या पासवर्ड")
-      } else if (result?.ok) {
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || "लॉगिन में त्रुटि हुई")
+      } else {
+        // Redirect to profiles page on successful login
         router.push("/profiles")
+        router.refresh() // Refresh to update navigation state
       }
     } catch (error) {
-      setError("लॉगिन में त्रुटि हुई")
+      console.error("[v0] Login error:", error)
+      setError("नेटवर्क त्रुटि या सर्वर उपलब्ध नहीं है")
     }
 
     setIsLoading(false)

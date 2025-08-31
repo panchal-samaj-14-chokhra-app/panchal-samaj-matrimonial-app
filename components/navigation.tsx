@@ -1,26 +1,69 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Menu, X, User, LogIn, LogOut, Settings } from "lucide-react"
-import { useSession, signOut } from "next-auth/react"
+import { Menu, X, LogIn, LogOut, Settings } from "lucide-react"
 import { useRouter } from "next/navigation"
+
+interface AuthUser {
+  userId: string
+  email: string
+  role: string
+  choklaId: string
+  villageId: string | null
+}
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
-  const { data: session, status } = useSession()
+  const [user, setUser] = useState<AuthUser | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      try {
+        const userData = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("user-data="))
+          ?.split("=")[1]
+
+        if (userData) {
+          const parsedUser = JSON.parse(decodeURIComponent(userData))
+          setUser(parsedUser)
+        } else {
+          setUser(null)
+        }
+      } catch (error) {
+        console.error("[v0] Error parsing user data:", error)
+        setUser(null)
+      }
+      setIsLoading(false)
+    }
+
+    checkAuthStatus()
+
+    // Listen for storage changes to update auth state
+    const handleStorageChange = () => checkAuthStatus()
+    window.addEventListener("storage", handleStorageChange)
+
+    return () => window.removeEventListener("storage", handleStorageChange)
+  }, [])
+
   const handleLogout = async () => {
-    await signOut({ redirect: false })
-    router.push("/")
-    setIsOpen(false)
+    try {
+      await fetch("/api/auth/logout", { method: "POST" })
+      setUser(null)
+      router.push("/")
+      router.refresh()
+      setIsOpen(false)
+    } catch (error) {
+      console.error("[v0] Logout error:", error)
+    }
   }
 
-  const isLoading = status === "loading"
-  const isAuthenticated = status === "authenticated" && session?.user
+  const isAuthenticated = user !== null
 
   return (
     <nav className="bg-white shadow-sm border-b border-orange-100">
@@ -51,7 +94,7 @@ export function Navigation() {
                 <div className="h-8 w-20 bg-gray-200 animate-pulse rounded"></div>
               ) : isAuthenticated ? (
                 <>
-                  <span className="text-sm text-gray-600">नमस्ते, {session.user.name || session.user.email}</span>
+                  <span className="text-sm text-gray-600">नमस्ते, {user.email}</span>
                   <Link href="/profile/settings">
                     <Button
                       variant="outline"
@@ -86,7 +129,6 @@ export function Navigation() {
                   </Link>
                   <Link href="/signup">
                     <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
-                      <User className="h-4 w-4 mr-2" />
                       साइन अप
                     </Button>
                   </Link>
@@ -135,9 +177,7 @@ export function Navigation() {
                   </div>
                 ) : isAuthenticated ? (
                   <>
-                    <div className="px-3 py-2 text-sm text-gray-600">
-                      नमस्ते, {session.user.name || session.user.email}
-                    </div>
+                    <div className="px-3 py-2 text-sm text-gray-600">नमस्ते, {user.email}</div>
                     <Link
                       href="/profile/settings"
                       className="block px-3 py-2 text-orange-600 hover:bg-orange-50 rounded-md font-medium"
