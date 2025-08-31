@@ -12,11 +12,15 @@ const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log("[v0] Missing credentials")
           return null
         }
 
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+          const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`
+          console.log("[v0] Attempting login to:", apiUrl)
+
+          const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -27,11 +31,38 @@ const authOptions: NextAuthOptions = {
             }),
           })
 
+          console.log("[v0] Response status:", response.status)
+          console.log("[v0] Response headers:", Object.fromEntries(response.headers.entries()))
+
+          const contentType = response.headers.get("content-type")
+
           if (!response.ok) {
+            let errorMessage = `HTTP ${response.status}`
+
+            if (contentType && contentType.includes("application/json")) {
+              try {
+                const errorData = await response.json()
+                errorMessage = errorData.message || errorMessage
+              } catch (e) {
+                console.log("[v0] Failed to parse error JSON")
+              }
+            } else {
+              const textResponse = await response.text()
+              console.log("[v0] Non-JSON error response:", textResponse.substring(0, 200))
+              errorMessage = `Server returned ${response.status} error`
+            }
+
+            console.log("[v0] Authentication failed:", errorMessage)
+            return null
+          }
+
+          if (!contentType || !contentType.includes("application/json")) {
+            console.log("[v0] Response is not JSON:", contentType)
             return null
           }
 
           const data = await response.json()
+          console.log("[v0] Login response data:", { ...data, token: data.token ? "[REDACTED]" : undefined })
 
           if (data && data.userId && data.token) {
             return {
@@ -45,9 +76,13 @@ const authOptions: NextAuthOptions = {
             }
           }
 
+          console.log("[v0] Invalid response data structure")
           return null
         } catch (error) {
-          console.error("Authentication error:", error)
+          console.error("[v0] Authentication error:", error)
+          if (error instanceof TypeError && error.message.includes("fetch")) {
+            console.error("[v0] Network error - check if API server is running and accessible")
+          }
           return null
         }
       },
@@ -80,6 +115,7 @@ const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
+  debug: process.env.NODE_ENV === "development",
 }
 
 const handler = NextAuth(authOptions)
