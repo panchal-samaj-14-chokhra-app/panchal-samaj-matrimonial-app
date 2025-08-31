@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { BackButton } from "@/components/back-button"
+import { signIn } from "next-auth/react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -23,30 +24,19 @@ export default function LoginPage() {
     setIsLoading(true)
     setError("")
 
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      })
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        setError(data.error || "लॉगिन में त्रुटि हुई")
-      } else {
-        // Redirect to profiles page on successful login
-        router.push("/profiles")
-        router.refresh() // Refresh to update navigation state
-      }
-    } catch (error) {
-      console.error("[v0] Login error:", error)
-      setError("नेटवर्क त्रुटि या सर्वर उपलब्ध नहीं है")
+    if (res?.error) {
+      setError(res.error || "लॉगिन में त्रुटि हुई")
+      setIsLoading(false)
+    } else {
+      router.push("/profiles")
+      router.refresh()
     }
-
-    setIsLoading(false)
   }
 
   return (
