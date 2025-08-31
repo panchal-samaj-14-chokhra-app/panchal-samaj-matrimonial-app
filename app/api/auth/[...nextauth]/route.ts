@@ -11,17 +11,23 @@ const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          console.log("[v0] Missing credentials")
-          return null
-        }
-
         try {
-          const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`
+          if (!credentials?.email || !credentials?.password) {
+            console.log("[v0] Missing credentials")
+            return null
+          }
+
+          const baseUrl = process.env.NEXT_PUBLIC_API_URL
+          if (!baseUrl) {
+            console.error("[v0] NEXT_PUBLIC_API_URL environment variable is not set")
+            return null
+          }
+
+          const apiUrl = `${baseUrl}/api/auth/login`
           console.log("[v0] Attempting login to:", apiUrl)
 
           const controller = new AbortController()
-          const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+          const timeoutId = setTimeout(() => controller.abort(), 10000)
 
           const response = await fetch(apiUrl, {
             method: "POST",
@@ -54,7 +60,6 @@ const authOptions: NextAuthOptions = {
                 const textResponse = await response.text()
                 console.log("[v0] Non-JSON error response:", textResponse.substring(0, 200))
 
-                // Check if it's an HTML error page
                 if (textResponse.includes("<html") || textResponse.includes("Internal Server Error")) {
                   errorMessage = "Server error - API endpoint may be down"
                 } else {
@@ -117,23 +122,33 @@ const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.accessToken = user.token
-        token.role = user.role
-        token.choklaId = user.choklaId
-        token.villageId = user.villageId
+      try {
+        if (user) {
+          token.accessToken = user.token
+          token.role = user.role
+          token.choklaId = user.choklaId
+          token.villageId = user.villageId
+        }
+        return token
+      } catch (error) {
+        console.error("[v0] JWT callback error:", error)
+        return token
       }
-      return token
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub!
-        session.accessToken = token.accessToken as string
-        session.user.role = token.role as string
-        session.user.choklaId = token.choklaId as string | null
-        session.user.villageId = token.villageId as string | null
+      try {
+        if (token) {
+          session.user.id = token.sub!
+          session.accessToken = token.accessToken as string
+          session.user.role = token.role as string
+          session.user.choklaId = token.choklaId as string | null
+          session.user.villageId = token.villageId as string | null
+        }
+        return session
+      } catch (error) {
+        console.error("[v0] Session callback error:", error)
+        return session
       }
-      return session
     },
   },
   pages: {
