@@ -19,6 +19,9 @@ export function Navigation() {
     setIsOpen(false)
   }
 
+  const isLoading = status === "loading"
+  const isAuthenticated = status === "authenticated" && session?.user
+
   return (
     <nav className="bg-white shadow-sm border-b border-orange-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,9 +47,11 @@ export function Navigation() {
               Profiles
             </Link>
             <div className="flex items-center space-x-3">
-              {session?.user ? (
+              {isLoading ? (
+                <div className="h-8 w-20 bg-gray-200 animate-pulse rounded"></div>
+              ) : isAuthenticated ? (
                 <>
-                  <span className="text-sm text-gray-600">नमस्ते, {session.user.name}</span>
+                  <span className="text-sm text-gray-600">नमस्ते, {session.user.name || session.user.email}</span>
                   <Link href="/profile/settings">
                     <Button
                       variant="outline"
@@ -124,9 +129,15 @@ export function Navigation() {
                 Profiles
               </Link>
               <div className="border-t border-orange-100 pt-3 mt-3 space-y-2">
-                {session?.user ? (
+                {isLoading ? (
+                  <div className="px-3 py-2">
+                    <div className="h-4 w-24 bg-gray-200 animate-pulse rounded"></div>
+                  </div>
+                ) : isAuthenticated ? (
                   <>
-                    <div className="px-3 py-2 text-sm text-gray-600">नमस्ते, {session.user.name}</div>
+                    <div className="px-3 py-2 text-sm text-gray-600">
+                      नमस्ते, {session.user.name || session.user.email}
+                    </div>
                     <Link
                       href="/profile/settings"
                       className="block px-3 py-2 text-orange-600 hover:bg-orange-50 rounded-md font-medium"
