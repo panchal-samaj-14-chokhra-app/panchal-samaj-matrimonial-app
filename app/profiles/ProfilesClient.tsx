@@ -108,10 +108,10 @@ export default function ProfilesClient() {
   }, [status, router])
 
   useEffect(() => {
-    if (session?.user?.userId && userExistsData && !userExistsData.exists) {
+    if (session?.user?.id && userExistsData && !userExistsData.exists) {
       router.push("/profile/create")
     }
-  }, [session?.user?.userId, userExistsData, router])
+  }, [session?.user?.id, userExistsData, router])
 
   // Show loading state while checking authentication or user existence
   if (status === "loading" || isCheckingUser) {
