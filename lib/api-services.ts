@@ -104,19 +104,19 @@ export const authService = {
 
   // Send OTP for signup
   sendOtp: async (data: SendOtpRequest): Promise<{ message: string }> => {
-    const response = await api.post("/auth/send-otp", data)
+    const response = await api.post("/api/auth/send-otp", data)
     return response.data
   },
 
   // Verify OTP for signup
   verifyOtpSignup: async (data: VerifyOtpRequest): Promise<{ message: string; verified: boolean }> => {
-    const response = await api.post("/auth/verify-otp-signup", data)
+    const response = await api.post("/api/auth/verify-otp-signup", data)
     return response.data
   },
 
   // Register user after OTP verification
   register: async (data: RegisterRequest): Promise<{ user: User; token: string }> => {
-    const response = await api.post("/auth/register", data)
+    const response = await api.post("/api/auth/register", data)
     return response.data
   },
 }
