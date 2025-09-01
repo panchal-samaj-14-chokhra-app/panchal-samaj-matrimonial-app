@@ -9,59 +9,107 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Upload, Plus, User, Settings, LogOut } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Upload, User, Settings, LogOut, X } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 import { useMatrimonialProfile } from "@/hooks/use-query-mutations"
 import { useSession, signOut } from "next-auth/react"
+import { useToast } from "@/hooks/use-toast"
 
 export default function CreateProfilePage() {
   const router = useRouter()
   const { data: session } = useSession()
   const { createProfile } = useMatrimonialProfile()
+  const { toast } = useToast()
 
   const [formData, setFormData] = useState({
     aboutMe: "",
     height: 0,
     weight: 0,
-    complexion: "",
-    maritalStatus: "",
-    occupation: "",
-    income: 0,
-    education: "",
-    religion: "Hindu",
     caste: "",
     subCaste: "",
     motherTongue: "",
-    age: 0,
     manglik: false,
     agePreferenceMin: 18,
     agePreferenceMax: 35,
     castePreference: "",
     locationPreference: "",
+    age: 0,
+    annualFamilyIncome: 0,
     dateOfBirth: "",
     district: "",
-    familyOccupation: "",
     gender: "MALE" as "MALE" | "FEMALE",
     gotra: "",
     grandfatherName: "",
     hobbies: "",
+    isPhysicallyAble: true,
     motherName: "",
     placeOfBirth: "",
     profileImageUrl: "",
     skinComplexion: "",
     socialLinks: "",
     timeOfBirth: "",
+    // Additional fields for form completeness
+    complexion: "",
+    maritalStatus: "",
+    occupation: "",
+    education: "",
+    religion: "Hindu",
+    familyOccupation: "",
     wantsToJoinEvent: false,
   })
 
+  const [uploadedImages, setUploadedImages] = useState<File[]>([])
+
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+
+    // Check file size (5MB = 5 * 1024 * 1024 bytes)
+    const maxSize = 5 * 1024 * 1024
+    const validFiles = files.filter((file) => {
+      if (file.size > maxSize) {
+        toast({
+          title: "फाइल साइज़ बड़ी है",
+          description: `${file.name} 5MB से बड़ी है। कृपया छोटी फाइल चुनें।`,
+          variant: "destructive",
+        })
+        return false
+      }
+      return true
+    })
+
+    // Limit to 3 images total
+    const remainingSlots = 3 - uploadedImages.length
+    const filesToAdd = validFiles.slice(0, remainingSlots)
+
+    if (validFiles.length > remainingSlots) {
+      toast({
+        title: "अधिकतम 3 फोटो",
+        description: "आप केवल 3 फोटो अपलोड कर सकते हैं।",
+        variant: "destructive",
+      })
+    }
+
+    setUploadedImages((prev) => [...prev, ...filesToAdd])
+  }
+
+  const removeImage = (index: number) => {
+    setUploadedImages((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!session?.user?.id) {
+      toast({
+        title: "त्रुटि",
+        description: "कृपया पहले लॉगिन करें।",
+        variant: "destructive",
+      })
       return
     }
 
@@ -71,12 +119,22 @@ export default function CreateProfilePage() {
       createdByUserId: session.user.id,
       updatedByUserId: session.user.id,
       isProfileActive: true,
-      isPhysicallyAble: true,
     }
 
     createProfile.mutate(profileData, {
       onSuccess: () => {
+        toast({
+          title: "सफलता",
+          description: "आपकी प्रोफाइल सफलतापूर्वक बनाई गई है।",
+        })
         router.push("/profiles")
+      },
+      onError: (error) => {
+        toast({
+          title: "त्रुटि",
+          description: "प्रोफाइल बनाने में समस्या हुई। कृपया पुनः प्रयास करें।",
+          variant: "destructive",
+        })
       },
     })
   }
@@ -101,33 +159,49 @@ export default function CreateProfilePage() {
           {/* Main Form - Left Side */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Photo Upload */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl text-orange-600">फोटो अपलोड करें</CardTitle>
-                  <CardDescription>अपनी स्पष्ट तस्वीरें अपलोड करें (अधिकतम 5 फोटो)</CardDescription>
+                  <CardDescription>अपनी स्पष्ट तस्वीरें अपलोड करें (अधिकतम 3 फोटो, प्रत्येक 5MB तक)</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <div className="aspect-square border-2 border-dashed border-orange-300 rounded-lg flex items-center justify-center hover:border-orange-400 cursor-pointer">
-                      <div className="text-center">
-                        <Upload className="h-8 w-8 text-orange-400 mx-auto mb-2" />
-                        <p className="text-sm text-orange-600">मुख्य फोटो</p>
-                      </div>
-                    </div>
-                    {[...Array(4)].map((_, i) => (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Display uploaded images */}
+                    {uploadedImages.map((file, index) => (
                       <div
-                        key={i}
-                        className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 cursor-pointer"
+                        key={index}
+                        className="relative aspect-square border-2 border-orange-300 rounded-lg overflow-hidden"
                       >
-                        <Plus className="h-6 w-6 text-gray-400" />
+                        <img
+                          src={URL.createObjectURL(file) || "/placeholder.svg"}
+                          alt={`Upload ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
                       </div>
                     ))}
+
+                    {/* Upload slots */}
+                    {uploadedImages.length < 3 && (
+                      <label className="aspect-square border-2 border-dashed border-orange-300 rounded-lg flex items-center justify-center hover:border-orange-400 cursor-pointer">
+                        <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
+                        <div className="text-center">
+                          <Upload className="h-8 w-8 text-orange-400 mx-auto mb-2" />
+                          <p className="text-sm text-orange-600">फोटो अपलोड करें</p>
+                          <p className="text-xs text-gray-500">अधिकतम 5MB</p>
+                        </div>
+                      </label>
+                    )}
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Basic Information */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl text-orange-600">व्यक्तिगत जानकारी</CardTitle>
@@ -146,6 +220,51 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
+                      <Label htmlFor="dateOfBirth">जन्म तिथि *</Label>
+                      <Input
+                        id="dateOfBirth"
+                        type="date"
+                        value={formData.dateOfBirth}
+                        onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="timeOfBirth">जन्म समय</Label>
+                      <Input
+                        id="timeOfBirth"
+                        type="time"
+                        value={formData.timeOfBirth}
+                        onChange={(e) => handleInputChange("timeOfBirth", e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="placeOfBirth">जन्म स्थान *</Label>
+                      <Input
+                        id="placeOfBirth"
+                        placeholder="जन्म स्थान"
+                        value={formData.placeOfBirth}
+                        onChange={(e) => handleInputChange("placeOfBirth", e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="district">जिला *</Label>
+                      <Input
+                        id="district"
+                        placeholder="आपका जिला"
+                        value={formData.district}
+                        onChange={(e) => handleInputChange("district", e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
                       <Label htmlFor="height">ऊंचाई (cm) *</Label>
                       <Input
                         id="height"
@@ -157,14 +276,31 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="weight">वजन (kg)</Label>
+                      <Label htmlFor="weight">वजन (kg) *</Label>
                       <Input
                         id="weight"
                         type="number"
                         placeholder="किग्रा में"
                         value={formData.weight || ""}
                         onChange={(e) => handleInputChange("weight", Number.parseFloat(e.target.value) || 0)}
+                        required
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="skinComplexion">रंग *</Label>
+                      <Select
+                        value={formData.skinComplexion}
+                        onValueChange={(value) => handleInputChange("skinComplexion", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="रंग चुनें" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Fair">गोरा</SelectItem>
+                          <SelectItem value="Wheatish">गेहुंआ</SelectItem>
+                          <SelectItem value="Dark">सांवला</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
@@ -182,49 +318,106 @@ export default function CreateProfilePage() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="maritalStatus">वैवाहिक स्थिति *</Label>
-                      <Select
-                        value={formData.maritalStatus}
-                        onValueChange={(value) => handleInputChange("maritalStatus", value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="स्थिति चुनें" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Single">अविवाहित</SelectItem>
-                          <SelectItem value="Divorced">तलाकशुदा</SelectItem>
-                          <SelectItem value="Widowed">विधवा/विधुर</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="complexion">रंग</Label>
-                      <Select
-                        value={formData.complexion}
-                        onValueChange={(value) => handleInputChange("complexion", value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="रंग चुनें" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Fair">गोरा</SelectItem>
-                          <SelectItem value="Wheatish">गेहुंआ</SelectItem>
-                          <SelectItem value="Dark">सांवला</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="motherTongue">मातृभाषा</Label>
+                      <Label htmlFor="motherTongue">मातृभाषा *</Label>
                       <Input
                         id="motherTongue"
                         placeholder="आपकी मातृभाषा"
                         value={formData.motherTongue}
                         onChange={(e) => handleInputChange("motherTongue", e.target.value)}
+                        required
                       />
                     </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="isPhysicallyAble"
+                      checked={formData.isPhysicallyAble}
+                      onCheckedChange={(checked) => handleInputChange("isPhysicallyAble", checked)}
+                    />
+                    <Label htmlFor="isPhysicallyAble">मैं शारीरिक रूप से स्वस्थ हूं</Label>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl text-orange-600">पारिवारिक जानकारी</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="motherName">माता का नाम *</Label>
+                      <Input
+                        id="motherName"
+                        placeholder="माता का नाम"
+                        value={formData.motherName}
+                        onChange={(e) => handleInputChange("motherName", e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="grandfatherName">दादाजी का नाम</Label>
+                      <Input
+                        id="grandfatherName"
+                        placeholder="दादाजी का नाम"
+                        value={formData.grandfatherName}
+                        onChange={(e) => handleInputChange("grandfatherName", e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="caste">जाति *</Label>
+                      <Input
+                        id="caste"
+                        placeholder="आपकी जाति"
+                        value={formData.caste}
+                        onChange={(e) => handleInputChange("caste", e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="subCaste">उप-जाति</Label>
+                      <Input
+                        id="subCaste"
+                        placeholder="उप-जाति"
+                        value={formData.subCaste}
+                        onChange={(e) => handleInputChange("subCaste", e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="gotra">गोत्र</Label>
+                      <Input
+                        id="gotra"
+                        placeholder="आपका गोत्र"
+                        value={formData.gotra}
+                        onChange={(e) => handleInputChange("gotra", e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="annualFamilyIncome">पारिवारिक वार्षिक आय</Label>
+                      <Input
+                        id="annualFamilyIncome"
+                        type="number"
+                        placeholder="पारिवारिक वार्षिक आय"
+                        value={formData.annualFamilyIncome || ""}
+                        onChange={(e) => handleInputChange("annualFamilyIncome", Number.parseInt(e.target.value) || 0)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="manglik"
+                      checked={formData.manglik}
+                      onCheckedChange={(checked) => handleInputChange("manglik", checked)}
+                    />
+                    <Label htmlFor="manglik">मंगलिक हैं</Label>
                   </div>
                 </CardContent>
               </Card>
@@ -257,24 +450,54 @@ export default function CreateProfilePage() {
                       />
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl text-orange-600">जीवनसाथी की प्राथमिकताएं</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="income">वार्षिक आय</Label>
+                      <Label htmlFor="agePreferenceMin">न्यूनतम आयु</Label>
                       <Input
-                        id="income"
+                        id="agePreferenceMin"
                         type="number"
-                        placeholder="वार्षिक आय"
-                        value={formData.income || ""}
-                        onChange={(e) => handleInputChange("income", Number.parseInt(e.target.value) || 0)}
+                        placeholder="न्यूनतम आयु"
+                        value={formData.agePreferenceMin || ""}
+                        onChange={(e) => handleInputChange("agePreferenceMin", Number.parseInt(e.target.value) || 18)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="familyOccupation">पारिवारिक व्यवसाय</Label>
+                      <Label htmlFor="agePreferenceMax">अधिकतम आयु</Label>
                       <Input
-                        id="familyOccupation"
-                        placeholder="पारिवारिक व्यवसाय"
-                        value={formData.familyOccupation}
-                        onChange={(e) => handleInputChange("familyOccupation", e.target.value)}
+                        id="agePreferenceMax"
+                        type="number"
+                        placeholder="अधिकतम आयु"
+                        value={formData.agePreferenceMax || ""}
+                        onChange={(e) => handleInputChange("agePreferenceMax", Number.parseInt(e.target.value) || 35)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="castePreference">जाति प्राथमिकता</Label>
+                      <Input
+                        id="castePreference"
+                        placeholder="पसंदीदा जाति"
+                        value={formData.castePreference}
+                        onChange={(e) => handleInputChange("castePreference", e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="locationPreference">स्थान प्राथमिकता</Label>
+                      <Input
+                        id="locationPreference"
+                        placeholder="पसंदीदा स्थान"
+                        value={formData.locationPreference}
+                        onChange={(e) => handleInputChange("locationPreference", e.target.value)}
                       />
                     </div>
                   </div>
@@ -307,14 +530,19 @@ export default function CreateProfilePage() {
                       onChange={(e) => handleInputChange("hobbies", e.target.value)}
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="socialLinks">सोशल मीडिया लिंक</Label>
+                    <Input
+                      id="socialLinks"
+                      placeholder="फेसबुक, इंस्टाग्राम आदि के लिंक"
+                      value={formData.socialLinks}
+                      onChange={(e) => handleInputChange("socialLinks", e.target.value)}
+                    />
+                  </div>
                 </CardContent>
               </Card>
 
-              {/* Submit Button */}
-              <div className="flex justify-end gap-4">
-                <Button variant="outline" type="button">
-                  ड्राफ्ट में सेव करें
-                </Button>
+              <div className="flex justify-end">
                 <Button type="submit" className="bg-orange-600 hover:bg-orange-700" disabled={createProfile.isPending}>
                   {createProfile.isPending ? "प्रोफाइल बनाई जा रही है..." : "प्रोफाइल बनाएं"}
                 </Button>
