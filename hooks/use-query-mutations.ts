@@ -119,7 +119,8 @@ export const useForgotPasswordFlow = () => {
 
 export const useMatrimonialProfile = () => {
   const createProfileMutation = useMutation({
-    mutationFn: profileService.createMatrimonialProfile,
+    mutationFn: ({ data, images }: { data: any; images?: File[] }) =>
+      profileService.createMatrimonialProfile(data, images),
     onSuccess: () => {
       toast({
         title: "सफल",

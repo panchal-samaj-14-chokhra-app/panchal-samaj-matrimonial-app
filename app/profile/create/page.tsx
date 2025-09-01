@@ -44,6 +44,7 @@ export default function CreateProfilePage() {
     hobbies: "",
     isPhysicallyAble: true,
     motherName: "",
+    fatherName: "",
     placeOfBirth: "",
     profileImageUrl: "",
     skinComplexion: "",
@@ -51,8 +52,9 @@ export default function CreateProfilePage() {
     timeOfBirth: "",
     // Additional fields for form completeness
     complexion: "",
-    maritalStatus: "",
+    maritalStatus: "Single",
     occupation: "",
+    income: 0,
     education: "",
     religion: "Hindu",
     familyOccupation: "",
@@ -119,24 +121,31 @@ export default function CreateProfilePage() {
       createdByUserId: session.user.id,
       updatedByUserId: session.user.id,
       isProfileActive: true,
+      // Map complexion to skinComplexion if not set
+      skinComplexion: formData.skinComplexion || formData.complexion,
+      // Set income from occupation income if not set separately
+      income: formData.income || 0,
     }
 
-    createProfile.mutate(profileData, {
-      onSuccess: () => {
-        toast({
-          title: "सफलता",
-          description: "आपकी प्रोफाइल सफलतापूर्वक बनाई गई है।",
-        })
-        router.push("/profiles")
+    createProfile.mutate(
+      { data: profileData, images: uploadedImages },
+      {
+        onSuccess: () => {
+          toast({
+            title: "सफलता",
+            description: "आपकी प्रोफाइल सफलतापूर्वक बनाई गई है।",
+          })
+          router.push("/profiles")
+        },
+        onError: (error) => {
+          toast({
+            title: "त्रुटि",
+            description: "प्रोफाइल बनाने में समस्या हुई। कृपया पुनः प्रयास करें।",
+            variant: "destructive",
+          })
+        },
       },
-      onError: (error) => {
-        toast({
-          title: "त्रुटि",
-          description: "प्रोफाइल बनाने में समस्या हुई। कृपया पुनः प्रयास करें।",
-          variant: "destructive",
-        })
-      },
-    })
+    )
   }
 
   return (
@@ -347,6 +356,16 @@ export default function CreateProfilePage() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
+                      <Label htmlFor="fatherName">पिता का नाम *</Label>
+                      <Input
+                        id="fatherName"
+                        placeholder="पिता का नाम"
+                        value={formData.fatherName}
+                        onChange={(e) => handleInputChange("fatherName", e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
                       <Label htmlFor="motherName">माता का नाम *</Label>
                       <Input
                         id="motherName"
@@ -356,15 +375,16 @@ export default function CreateProfilePage() {
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="grandfatherName">दादाजी का नाम</Label>
-                      <Input
-                        id="grandfatherName"
-                        placeholder="दादाजी का नाम"
-                        value={formData.grandfatherName}
-                        onChange={(e) => handleInputChange("grandfatherName", e.target.value)}
-                      />
-                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="grandfatherName">दादाजी का नाम</Label>
+                    <Input
+                      id="grandfatherName"
+                      placeholder="दादाजी का नाम"
+                      value={formData.grandfatherName}
+                      onChange={(e) => handleInputChange("grandfatherName", e.target.value)}
+                    />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -411,6 +431,16 @@ export default function CreateProfilePage() {
                     </div>
                   </div>
 
+                  <div className="space-y-2">
+                    <Label htmlFor="familyOccupation">पारिवारिक व्यवसाय</Label>
+                    <Input
+                      id="familyOccupation"
+                      placeholder="पारिवारिक व्यवसाय"
+                      value={formData.familyOccupation}
+                      onChange={(e) => handleInputChange("familyOccupation", e.target.value)}
+                    />
+                  </div>
+
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="manglik"
@@ -448,6 +478,35 @@ export default function CreateProfilePage() {
                         onChange={(e) => handleInputChange("occupation", e.target.value)}
                         required
                       />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="income">वार्षिक आय</Label>
+                      <Input
+                        id="income"
+                        type="number"
+                        placeholder="वार्षिक आय"
+                        value={formData.income || ""}
+                        onChange={(e) => handleInputChange("income", Number.parseInt(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="maritalStatus">वैवाहिक स्थिति *</Label>
+                      <Select
+                        value={formData.maritalStatus}
+                        onValueChange={(value) => handleInputChange("maritalStatus", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="वैवाहिक स्थिति चुनें" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Single">अविवाहित</SelectItem>
+                          <SelectItem value="Divorced">तलाकशुदा</SelectItem>
+                          <SelectItem value="Widowed">विधवा/विधुर</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </CardContent>
@@ -538,6 +597,15 @@ export default function CreateProfilePage() {
                       value={formData.socialLinks}
                       onChange={(e) => handleInputChange("socialLinks", e.target.value)}
                     />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="wantsToJoinEvent"
+                      checked={formData.wantsToJoinEvent}
+                      onCheckedChange={(checked) => handleInputChange("wantsToJoinEvent", checked)}
+                    />
+                    <Label htmlFor="wantsToJoinEvent">मैं मैट्रिमोनियल इवेंट्स में भाग लेना चाहता/चाहती हूं</Label>
                   </div>
                 </CardContent>
               </Card>

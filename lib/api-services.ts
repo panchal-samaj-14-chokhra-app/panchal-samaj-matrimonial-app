@@ -110,6 +110,7 @@ export interface MatrimonialProfileData {
   hobbies: string
   isPhysicallyAble: boolean
   motherName: string
+  fatherName: string
   placeOfBirth: string
   profileImageUrl?: string
   skinComplexion: string
@@ -117,6 +118,7 @@ export interface MatrimonialProfileData {
   timeOfBirth: string
   updatedByUserId: string
   wantsToJoinEvent: boolean
+  annualFamilyIncome: number
 }
 
 // API Service Functions
@@ -256,8 +258,26 @@ export const profileService = {
     return response.data
   },
 
-  createMatrimonialProfile: async (data: MatrimonialProfileData): Promise<any> => {
-    const response = await api.post("/metrimonial", data)
+  createMatrimonialProfile: async (data: MatrimonialProfileData, images?: File[]): Promise<any> => {
+    const formData = new FormData()
+
+    // Add all profile data fields to FormData
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value.toString())
+      }
+    })
+
+    // Add images if provided
+    if (images && images.length > 0) {
+      images.forEach((image) => {
+        formData.append("images", image)
+      })
+    }
+
+    const response = await api.post("/metrimonial", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
     return response.data
   },
 }
