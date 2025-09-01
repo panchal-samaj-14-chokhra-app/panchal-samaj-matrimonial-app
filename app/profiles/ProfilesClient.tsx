@@ -99,7 +99,7 @@ export default function ProfilesClient() {
     data: userExistsData,
     isLoading: isCheckingUser,
     error: userCheckError,
-  } = useCheckUserExists(session?.user?.userId)
+  } = useCheckUserExists(session?.user?.id)
 
   useEffect(() => {
     if (status === "unauthenticated") {
