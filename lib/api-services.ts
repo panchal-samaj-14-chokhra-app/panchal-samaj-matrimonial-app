@@ -83,48 +83,48 @@ export interface RegisterRequest {
 export const authService = {
   // Login user
   login: async (credentials: LoginCredentials): Promise<{ user: User; token: string }> => {
-    const response = await api.post("/auth/login", credentials)
+    const response = await api.post("/api/auth/login", credentials)
     return response.data
   },
 
   // Register new user
   signup: async (data: SignupData): Promise<{ user: User; token?: string }> => {
-    const response = await api.post("/auth/signup", data)
+    const response = await api.post("/api/auth/signup", data)
     return response.data
   },
 
   // Logout user
   logout: async (): Promise<void> => {
-    await api.post("/auth/logout")
+    await api.post("/api/auth/logout")
   },
 
   // Forgot password
   forgotPassword: async (email: string): Promise<{ message: string }> => {
-    const response = await api.post("/auth/forgot-password", { email })
+    const response = await api.post("/api/auth/forgot-password", { email })
     return response.data
   },
 
   // Send OTP for forgot password
   sendForgotPasswordOtp: async (data: ForgotPasswordRequest): Promise<{ message: string }> => {
-    const response = await api.post("/auth/forgot-password", data)
+    const response = await api.post("/api/auth/forgot-password", data)
     return response.data
   },
 
   // Verify OTP for forgot password
   verifyOtpForgot: async (data: VerifyOtpForgotRequest): Promise<{ message: string; verified: boolean }> => {
-    const response = await api.post("/auth/verify-otp", data)
+    const response = await api.post("/api/auth/verify-otp", data)
     return response.data
   },
 
   // Reset password with new password
   resetPasswordWithOtp: async (data: ResetPasswordRequest): Promise<{ message: string }> => {
-    const response = await api.post("/auth/reset-password", data)
+    const response = await api.post("/api/auth/reset-password", data)
     return response.data
   },
 
   // Reset password
   resetPassword: async (token: string, password: string): Promise<{ message: string }> => {
-    const response = await api.post("/auth/reset-password", { token, password })
+    const response = await api.post("/api/auth/reset-password", { token, password })
     return response.data
   },
 
@@ -136,7 +136,7 @@ export const authService = {
 
   // Send OTP for signup
   sendOtp: async (data: SendOtpRequest): Promise<{ message: string }> => {
-    const response = await api.post("/api/auth/send-otp", data)
+    const response = await api.post("/api/api/auth/send-otp", data)
     return response.data
   },
 
