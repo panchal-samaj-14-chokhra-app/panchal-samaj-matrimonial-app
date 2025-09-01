@@ -137,12 +137,26 @@ export default function CreateProfilePage() {
           })
           router.push("/profiles")
         },
-        onError: (error) => {
-          toast({
-            title: "त्रुटि",
-            description: "प्रोफाइल बनाने में समस्या हुई। कृपया पुनः प्रयास करें।",
-            variant: "destructive",
-          })
+        onError: (error: any) => {
+          const errorMessage = error?.response?.data?.message || error?.message || ""
+
+          if (errorMessage.includes("Profile already exists")) {
+            toast({
+              title: "प्रोफाइल पहले से मौजूद है",
+              description: "आपकी प्रोफाइल पहले से बनी हुई है। आपको प्रोफाइल पेज पर भेजा जा रहा है।",
+              variant: "destructive",
+            })
+            // Redirect to profiles page after a short delay
+            setTimeout(() => {
+              router.push("/profiles")
+            }, 2000)
+          } else {
+            toast({
+              title: "त्रुटि",
+              description: "प्रोफाइल बनाने में समस्या हुई। कृपया पुनः प्रयास करें।",
+              variant: "destructive",
+            })
+          }
         },
       },
     )
