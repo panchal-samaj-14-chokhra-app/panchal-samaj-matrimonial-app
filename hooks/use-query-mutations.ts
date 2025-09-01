@@ -1,6 +1,15 @@
 import { authService, profileService } from "@/lib/api-services"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "@/hooks/use-toast"
+
+export const useCheckUserExists = (userId: string | undefined) => {
+  return useQuery({
+    queryKey: ["userExists", userId],
+    queryFn: () => profileService.checkUserExists(userId!),
+    enabled: !!userId,
+    retry: false,
+  })
+}
 
 export const useSignupFlow = () => {
   const sendOtpMutation = useMutation({

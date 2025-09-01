@@ -176,7 +176,7 @@ export const authService = {
 
   // Send OTP for signup
   sendOtp: async (data: SendOtpRequest): Promise<{ message: string }> => {
-    const response = await api.post("/api/auth/send-otp", data)
+    const response = await api.post("/auth/send-otp", data)
     return response.data
   },
 
@@ -206,6 +206,11 @@ export const profileService = {
     limit?: number
   }): Promise<{ profiles: Profile[]; total: number; page: number; totalPages: number }> => {
     const response = await api.get("/profiles", { params: filters })
+    return response.data
+  },
+
+  checkUserExists: async (userId: string): Promise<{ exists: boolean }> => {
+    const response = await api.get(`/metrimonial/exists/${userId}`)
     return response.data
   },
 

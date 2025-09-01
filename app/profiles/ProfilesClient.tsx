@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ProfileListing } from "@/components/profile-listing"
 import { Loader2 } from "lucide-react"
+import { useCheckUserExists } from "@/hooks/use-query-mutations"
 
 // Sample profile data
 const profiles = [
@@ -94,14 +95,26 @@ export default function ProfilesClient() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
+  const {
+    data: userExistsData,
+    isLoading: isCheckingUser,
+    error: userCheckError,
+  } = useCheckUserExists(session?.user?.userId)
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login")
     }
   }, [status, router])
 
-  // Show loading state while checking authentication
-  if (status === "loading") {
+  useEffect(() => {
+    if (session?.user?.userId && userExistsData && !userExistsData.exists) {
+      router.push("/profile/create")
+    }
+  }, [session?.user?.userId, userExistsData, router])
+
+  // Show loading state while checking authentication or user existence
+  if (status === "loading" || isCheckingUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center">
         <div className="text-center">
@@ -114,6 +127,10 @@ export default function ProfilesClient() {
 
   // Don't render anything if not authenticated (will redirect)
   if (!session) {
+    return null
+  }
+
+  if (userExistsData && !userExistsData.exists) {
     return null
   }
 
