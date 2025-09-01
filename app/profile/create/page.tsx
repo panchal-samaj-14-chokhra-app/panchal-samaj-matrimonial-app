@@ -232,7 +232,7 @@ export default function CreateProfilePage() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="age">आयु *</Label>
+                      <Label htmlFor="age">आयु / Age *</Label>
                       <Input
                         id="age"
                         type="number"
@@ -243,7 +243,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="dateOfBirth">जन्म तिथि *</Label>
+                      <Label htmlFor="dateOfBirth">जन्म तिथि / Date of Birth *</Label>
                       <Input
                         id="dateOfBirth"
                         type="date"
@@ -253,7 +253,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="timeOfBirth">जन्म समय</Label>
+                      <Label htmlFor="timeOfBirth">जन्म समय / Time of Birth</Label>
                       <Input
                         id="timeOfBirth"
                         type="time"
@@ -265,7 +265,7 @@ export default function CreateProfilePage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="placeOfBirth">जन्म स्थान *</Label>
+                      <Label htmlFor="placeOfBirth">जन्म स्थान / Place of Birth *</Label>
                       <Input
                         id="placeOfBirth"
                         placeholder="जन्म स्थान"
@@ -275,7 +275,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="district">जिला *</Label>
+                      <Label htmlFor="district">जिला / District *</Label>
                       <Input
                         id="district"
                         placeholder="आपका जिला"
@@ -288,7 +288,7 @@ export default function CreateProfilePage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="height">ऊंचाई (cm) *</Label>
+                      <Label htmlFor="height">ऊंचाई / Height (cm) *</Label>
                       <Input
                         id="height"
                         type="number"
@@ -299,7 +299,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="weight">वजन (kg) *</Label>
+                      <Label htmlFor="weight">वजन / Weight (kg) *</Label>
                       <Input
                         id="weight"
                         type="number"
@@ -310,7 +310,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="skinComplexion">रंग *</Label>
+                      <Label htmlFor="skinComplexion">रंग / Complexion *</Label>
                       <Select
                         value={formData.skinComplexion}
                         onValueChange={(value) => handleInputChange("skinComplexion", value)}
@@ -329,7 +329,7 @@ export default function CreateProfilePage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="gender">लिंग *</Label>
+                      <Label htmlFor="gender">लिंग / Gender *</Label>
                       <Select value={formData.gender} onValueChange={(value) => handleInputChange("gender", value)}>
                         <SelectTrigger>
                           <SelectValue placeholder="लिंग चुनें" />
@@ -341,7 +341,7 @@ export default function CreateProfilePage() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="motherTongue">मातृभाषा *</Label>
+                      <Label htmlFor="motherTongue">मातृभाषा / Mother Tongue *</Label>
                       <Input
                         id="motherTongue"
                         placeholder="आपकी मातृभाषा"
@@ -358,7 +358,7 @@ export default function CreateProfilePage() {
                       checked={formData.isPhysicallyAble}
                       onCheckedChange={(checked) => handleInputChange("isPhysicallyAble", checked)}
                     />
-                    <Label htmlFor="isPhysicallyAble">मैं शारीरिक रूप से स्वस्थ हूं</Label>
+                    <Label htmlFor="isPhysicallyAble">मैं शारीरिक रूप से स्वस्थ हूं / I am physically healthy</Label>
                   </div>
                 </CardContent>
               </Card>
@@ -370,7 +370,7 @@ export default function CreateProfilePage() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="fatherName">पिता का नाम *</Label>
+                      <Label htmlFor="fatherName">पिता का नाम / Father's Name *</Label>
                       <Input
                         id="fatherName"
                         placeholder="पिता का नाम"
@@ -380,7 +380,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="motherName">माता का नाम *</Label>
+                      <Label htmlFor="motherName">माता का नाम / Mother's Name *</Label>
                       <Input
                         id="motherName"
                         placeholder="माता का नाम"
@@ -392,7 +392,7 @@ export default function CreateProfilePage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="grandfatherName">दादाजी का नाम</Label>
+                    <Label htmlFor="grandfatherName">दादाजी का नाम / Grandfather's Name</Label>
                     <Input
                       id="grandfatherName"
                       placeholder="दादाजी का नाम"
@@ -403,7 +403,7 @@ export default function CreateProfilePage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="caste">जाति *</Label>
+                      <Label htmlFor="caste">जाति / Caste *</Label>
                       <Input
                         id="caste"
                         placeholder="आपकी जाति"
@@ -413,7 +413,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="subCaste">उप-जाति</Label>
+                      <Label htmlFor="subCaste">उप-जाति / Sub-Caste</Label>
                       <Input
                         id="subCaste"
                         placeholder="उप-जाति"
@@ -425,7 +425,7 @@ export default function CreateProfilePage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="gotra">गोत्र</Label>
+                      <Label htmlFor="gotra">गोत्र / Gotra</Label>
                       <Input
                         id="gotra"
                         placeholder="आपका गोत्र"
@@ -434,7 +434,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="annualFamilyIncome">पारिवारिक वार्षिक आय</Label>
+                      <Label htmlFor="annualFamilyIncome">पारिवारिक वार्षिक आय / Annual Family Income</Label>
                       <Input
                         id="annualFamilyIncome"
                         type="number"
@@ -446,7 +446,7 @@ export default function CreateProfilePage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="familyOccupation">पारिवारिक व्यवसाय</Label>
+                    <Label htmlFor="familyOccupation">पारिवारिक व्यवसाय / Family Occupation</Label>
                     <Input
                       id="familyOccupation"
                       placeholder="पारिवारिक व्यवसाय"
@@ -461,7 +461,7 @@ export default function CreateProfilePage() {
                       checked={formData.manglik}
                       onCheckedChange={(checked) => handleInputChange("manglik", checked)}
                     />
-                    <Label htmlFor="manglik">मंगलिक हैं</Label>
+                    <Label htmlFor="manglik">मंगलिक हैं / Manglik</Label>
                   </div>
                 </CardContent>
               </Card>
@@ -474,7 +474,7 @@ export default function CreateProfilePage() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="education">शिक्षा *</Label>
+                      <Label htmlFor="education">शिक्षा / Education *</Label>
                       <Input
                         id="education"
                         placeholder="आपकी शिक्षा"
@@ -484,7 +484,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="occupation">पेशा *</Label>
+                      <Label htmlFor="occupation">पेशा / Occupation *</Label>
                       <Input
                         id="occupation"
                         placeholder="आपका पेशा"
@@ -497,7 +497,7 @@ export default function CreateProfilePage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="income">वार्षिक आय</Label>
+                      <Label htmlFor="income">वार्षिक आय / Annual Income</Label>
                       <Input
                         id="income"
                         type="number"
@@ -507,7 +507,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="maritalStatus">वैवाहिक स्थिति *</Label>
+                      <Label htmlFor="maritalStatus">वैवाहिक स्थिति / Marital Status *</Label>
                       <Select
                         value={formData.maritalStatus}
                         onValueChange={(value) => handleInputChange("maritalStatus", value)}
@@ -533,7 +533,7 @@ export default function CreateProfilePage() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="agePreferenceMin">न्यूनतम आयु</Label>
+                      <Label htmlFor="agePreferenceMin">न्यूनतम आयु / Minimum Age</Label>
                       <Input
                         id="agePreferenceMin"
                         type="number"
@@ -543,7 +543,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="agePreferenceMax">अधिकतम आयु</Label>
+                      <Label htmlFor="agePreferenceMax">अधिकतम आयु / Maximum Age</Label>
                       <Input
                         id="agePreferenceMax"
                         type="number"
@@ -556,7 +556,7 @@ export default function CreateProfilePage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="castePreference">जाति प्राथमिकता</Label>
+                      <Label htmlFor="castePreference">जाति प्राथमिकता / Caste Preference</Label>
                       <Input
                         id="castePreference"
                         placeholder="पसंदीदा जाति"
@@ -565,7 +565,7 @@ export default function CreateProfilePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="locationPreference">स्थान प्राथमिकता</Label>
+                      <Label htmlFor="locationPreference">स्थान प्राथमिकता / Location Preference</Label>
                       <Input
                         id="locationPreference"
                         placeholder="पसंदीदा स्थान"
@@ -584,7 +584,7 @@ export default function CreateProfilePage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="aboutMe">अपने बारे में लिखें *</Label>
+                    <Label htmlFor="aboutMe">अपने बारे में लिखें / About Me *</Label>
                     <Textarea
                       id="aboutMe"
                       placeholder="अपने बारे में, अपनी रुचियों और जीवनसाथी की अपेक्षाओं के बारे में लिखें..."
@@ -595,7 +595,7 @@ export default function CreateProfilePage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="hobbies">शौक</Label>
+                    <Label htmlFor="hobbies">शौक / Hobbies</Label>
                     <Input
                       id="hobbies"
                       placeholder="आपके शौक (कॉमा से अलग करें)"
@@ -604,7 +604,7 @@ export default function CreateProfilePage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="socialLinks">सोशल मीडिया लिंक</Label>
+                    <Label htmlFor="socialLinks">सोशल मीडिया लिंक / Social Media Links</Label>
                     <Input
                       id="socialLinks"
                       placeholder="फेसबुक, इंस्टाग्राम आदि के लिंक"
@@ -619,7 +619,9 @@ export default function CreateProfilePage() {
                       checked={formData.wantsToJoinEvent}
                       onCheckedChange={(checked) => handleInputChange("wantsToJoinEvent", checked)}
                     />
-                    <Label htmlFor="wantsToJoinEvent">मैं मैट्रिमोनियल इवेंट्स में भाग लेना चाहता/चाहती हूं</Label>
+                    <Label htmlFor="wantsToJoinEvent">
+                      मैं मैट्रिमोनियल इवेंट्स में भाग लेना चाहता/चाहती हूं / I want to participate in matrimonial events
+                    </Label>
                   </div>
                 </CardContent>
               </Card>
