@@ -79,52 +79,92 @@ export interface RegisterRequest {
   choklaId: string
 }
 
+export interface MatrimonialProfileData {
+  userId: string
+  aboutMe: string
+  height: number
+  weight: number
+  complexion: string
+  maritalStatus: string
+  occupation: string
+  income: number
+  education: string
+  religion: string
+  caste: string
+  subCaste: string
+  motherTongue: string
+  age: number
+  manglik: boolean
+  isProfileActive: boolean
+  agePreferenceMin: number
+  agePreferenceMax: number
+  castePreference: string
+  locationPreference: string
+  createdByUserId: string
+  dateOfBirth: string
+  district: string
+  familyOccupation: string
+  gender: "MALE" | "FEMALE"
+  gotra: string
+  grandfatherName: string
+  hobbies: string
+  isPhysicallyAble: boolean
+  motherName: string
+  placeOfBirth: string
+  profileImageUrl?: string
+  skinComplexion: string
+  socialLinks?: string
+  timeOfBirth: string
+  updatedByUserId: string
+  wantsToJoinEvent: boolean
+}
+
 // API Service Functions
 export const authService = {
   // Login user
   login: async (credentials: LoginCredentials): Promise<{ user: User; token: string }> => {
-    const response = await api.post("/api/auth/login", credentials)
+    const response = await api.post("/auth/login", credentials)
     return response.data
   },
 
   // Register new user
   signup: async (data: SignupData): Promise<{ user: User; token?: string }> => {
-    const response = await api.post("/api/auth/signup", data)
+    const response = await api.post("/auth/signup", data)
     return response.data
   },
 
   // Logout user
   logout: async (): Promise<void> => {
-    await api.post("/api/auth/logout")
+    await api.post("/auth/logout")
   },
 
   // Forgot password
   forgotPassword: async (email: string): Promise<{ message: string }> => {
-    const response = await api.post("/api/auth/forgot-password", { email })
+    const response = await api.post("/auth/forgot-password", { email })
     return response.data
   },
 
   // Send OTP for forgot password
   sendForgotPasswordOtp: async (data: ForgotPasswordRequest): Promise<{ message: string }> => {
-    const response = await api.post("/api/auth/forgot-password", data)
+    const response = await api.post("/auth/forgot-password", data)
     return response.data
   },
 
   // Verify OTP for forgot password
   verifyOtpForgot: async (data: VerifyOtpForgotRequest): Promise<{ message: string; verified: boolean }> => {
-    const response = await api.post("/api/auth/verify-otp", data)
+    const response = await api.post("/auth/verify-otp", data)
     return response.data
   },
 
   // Reset password with new password
   resetPasswordWithOtp: async (data: ResetPasswordRequest): Promise<{ message: string }> => {
-    const response = await api.post("/api/auth/reset-password", data)
+    const response = await api.post("/auth/reset-password", data)
     return response.data
   },
 
   // Reset password
   resetPassword: async (token: string, password: string): Promise<{ message: string }> => {
-    const response = await api.post("/api/auth/reset-password", { token, password })
+    const response = await api.post("/auth/reset-password", { token, password })
     return response.data
   },
 
@@ -136,19 +176,19 @@ export const authService = {
 
   // Send OTP for signup
   sendOtp: async (data: SendOtpRequest): Promise<{ message: string }> => {
-    const response = await api.post("/api/api/auth/send-otp", data)
+    const response = await api.post("/auth/send-otp", data)
     return response.data
   },
 
   // Verify OTP for signup
   verifyOtpSignup: async (data: VerifyOtpRequest): Promise<{ message: string; verified: boolean }> => {
-    const response = await api.post("/api/auth/verify-otp-signup", data)
+    const response = await api.post("/auth/verify-otp-signup", data)
     return response.data
   },
 
   // Register user after OTP verification
   register: async (data: RegisterRequest): Promise<{ user: User; token: string }> => {
-    const response = await api.post("/api/auth/register", data)
+    const response = await api.post("/auth/register", data)
     return response.data
   },
 }
@@ -208,6 +248,11 @@ export const profileService = {
   // Get user's own profile
   getMyProfile: async (): Promise<Profile> => {
     const response = await api.get("/profiles/me")
+    return response.data
+  },
+
+  createMatrimonialProfile: async (data: MatrimonialProfileData): Promise<any> => {
+    const response = await api.post("/metrimonial", data)
     return response.data
   },
 }

@@ -1,4 +1,4 @@
-import { authService } from "@/lib/api-services"
+import { authService, profileService } from "@/lib/api-services"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "@/hooks/use-toast"
 
@@ -105,5 +105,28 @@ export const useForgotPasswordFlow = () => {
     sendForgotPasswordOtp: sendForgotPasswordOtpMutation,
     verifyOtpForgot: verifyOtpForgotMutation,
     resetPassword: resetPasswordMutation,
+  }
+}
+
+export const useMatrimonialProfile = () => {
+  const createProfileMutation = useMutation({
+    mutationFn: profileService.createMatrimonialProfile,
+    onSuccess: () => {
+      toast({
+        title: "सफल",
+        description: "आपकी प्रोफाइल सफलतापूर्वक बनाई गई है",
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        title: "त्रुटि",
+        description: error.response?.data?.message || "प्रोफाइल बनाने में समस्या हुई",
+        variant: "destructive",
+      })
+    },
+  })
+
+  return {
+    createProfile: createProfileMutation,
   }
 }
