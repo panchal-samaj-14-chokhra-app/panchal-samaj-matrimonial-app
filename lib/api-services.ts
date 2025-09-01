@@ -176,7 +176,7 @@ export const authService = {
 
   // Send OTP for signup
   sendOtp: async (data: SendOtpRequest): Promise<{ message: string }> => {
-    const response = await api.post("/auth/send-otp", data)
+    const response = await api.post("/api/auth/send-otp", data)
     return response.data
   },
 
