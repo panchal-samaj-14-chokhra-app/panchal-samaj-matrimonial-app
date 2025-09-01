@@ -48,3 +48,62 @@ export const useSignupFlow = () => {
     register: registerMutation,
   }
 }
+
+export const useForgotPasswordFlow = () => {
+  const sendForgotPasswordOtpMutation = useMutation({
+    mutationFn: authService.sendForgotPasswordOtp,
+    onSuccess: () => {
+      toast({
+        title: "सफल",
+        description: "OTP आपके ईमेल पर भेज दिया गया है",
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        title: "त्रुटि",
+        description: error.response?.data?.message || "OTP भेजने में समस्या हुई",
+        variant: "destructive",
+      })
+    },
+  })
+
+  const verifyOtpForgotMutation = useMutation({
+    mutationFn: authService.verifyOtpForgot,
+    onSuccess: () => {
+      toast({
+        title: "सफल",
+        description: "OTP सत्यापित हो गया",
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        title: "त्रुटि",
+        description: error.response?.data?.message || "OTP सत्यापन में समस्या हुई",
+        variant: "destructive",
+      })
+    },
+  })
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: authService.resetPasswordWithOtp,
+    onSuccess: () => {
+      toast({
+        title: "सफल",
+        description: "पासवर्ड सफलतापूर्वक रीसेट हो गया। कृपया लॉगिन करें।",
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        title: "त्रुटि",
+        description: error.response?.data?.message || "पासवर्ड रीसेट में समस्या हुई",
+        variant: "destructive",
+      })
+    },
+  })
+
+  return {
+    sendForgotPasswordOtp: sendForgotPasswordOtpMutation,
+    verifyOtpForgot: verifyOtpForgotMutation,
+    resetPassword: resetPasswordMutation,
+  }
+}
