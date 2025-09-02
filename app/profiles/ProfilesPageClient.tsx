@@ -127,9 +127,7 @@ export default function ProfilesPageClient() {
               <h1 className="text-3xl font-bold text-orange-600">प्रोफाइल्स</h1>
               <p className="text-gray-600 mt-1">सभी सक्रिय मैट्रिमोनियल प्रोफाइल्स</p>
             </div>
-            <Link href="/profile/create">
-              <Button className="bg-orange-600 hover:bg-orange-700">नई प्रोफाइल बनाएं</Button>
-            </Link>
+          
           </div>
         </div>
       </div>
