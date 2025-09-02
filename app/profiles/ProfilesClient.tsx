@@ -111,6 +111,8 @@ export default function ProfilesClient() {
 
   console.log("[v0] ProfilesClient - profiles data:", profiles)
   console.log("[v0] ProfilesClient - profiles length:", profiles.length)
+  console.log("[v0] ProfilesClient - session:", session)
+  console.log("[v0] ProfilesClient - userExistsData:", userExistsData)
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -200,11 +202,39 @@ export default function ProfilesClient() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-4 p-4 bg-yellow-100 rounded">
-          <p>Debug: Profiles count: {profiles.length}</p>
-          <p>Debug: First profile: {profiles[0]?.name}</p>
+        <div className="mb-6 p-6 bg-yellow-200 border-2 border-yellow-400 rounded-lg">
+          <h3 className="text-lg font-bold text-yellow-800 mb-2">🐛 Debug Information</h3>
+          <div className="space-y-2 text-yellow-800">
+            <p>
+              <strong>Profiles count:</strong> {profiles.length}
+            </p>
+            <p>
+              <strong>First profile:</strong> {profiles[0]?.name}
+            </p>
+            <p>
+              <strong>Session status:</strong> {status}
+            </p>
+            <p>
+              <strong>User exists:</strong> {userExistsData?.exists ? "Yes" : "No"}
+            </p>
+            <p>
+              <strong>User email:</strong> {session?.user?.email}
+            </p>
+          </div>
         </div>
-        <ProfileListing profiles={profiles} />
+
+        {profiles.length > 0 ? (
+          <div>
+            <p className="mb-4 text-green-600 font-semibold">
+              ✅ Rendering ProfileListing with {profiles.length} profiles
+            </p>
+            <ProfileListing profiles={profiles} />
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-red-600 text-xl">❌ No profiles to display</p>
+          </div>
+        )}
       </div>
     </div>
   )
