@@ -109,6 +109,9 @@ export default function ProfilesClient() {
     error: userCheckError,
   } = useCheckUserExists(session?.user?.id)
 
+  console.log("[v0] ProfilesClient - profiles data:", profiles)
+  console.log("[v0] ProfilesClient - profiles length:", profiles.length)
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login")
@@ -197,6 +200,10 @@ export default function ProfilesClient() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-4 p-4 bg-yellow-100 rounded">
+          <p>Debug: Profiles count: {profiles.length}</p>
+          <p>Debug: First profile: {profiles[0]?.name}</p>
+        </div>
         <ProfileListing profiles={profiles} />
       </div>
     </div>
