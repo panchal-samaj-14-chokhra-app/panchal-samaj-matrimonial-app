@@ -1,13 +1,21 @@
 "use client"
 
 import { useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ProfileListing } from "@/components/profile-listing"
-import { Loader2 } from "lucide-react"
+import { Loader2, User, Mail, Edit, LogOut } from "lucide-react"
 import { useCheckUserExists } from "@/hooks/use-query-mutations"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 // Sample profile data
 const profiles = [
@@ -119,7 +127,7 @@ export default function ProfilesClient() {
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-orange-600 mx-auto mb-4" />
-          <p className="text-gray-600">लोड हो रहा है...</p>
+          <p className="text-gray-600">लोड हो रहा है... / Loading...</p>
         </div>
       </div>
     )
@@ -141,12 +149,50 @@ export default function ProfilesClient() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-orange-600">प्रोफाइल्स</h1>
-              <p className="text-gray-600 mt-1">सभी सक्रिय मैट्रिमोनियल प्रोफाइल्स</p>
+              <h1 className="text-3xl font-bold text-orange-600">प्रोफाइल्स / Profiles</h1>
+              <p className="text-gray-600 mt-1">सभी सक्रिय मैट्रिमोनियल प्रोफाइल्स / All Active Matrimonial Profiles</p>
             </div>
-            <Link href="/profile/create">
-              <Button className="bg-orange-600 hover:bg-orange-700">नई प्रोफाइल बनाएं</Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/profile/create">
+                <Button className="bg-orange-600 hover:bg-orange-700">नई प्रोफाइल बनाएं / Create New Profile</Button>
+              </Link>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="rounded-full bg-transparent">
+                    <User className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">प्रोफाइल / Profile</p>
+                      <p className="text-xs leading-none text-muted-foreground">{session?.user?.name}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Mail className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span className="text-sm">ईमेल / Email</span>
+                      <span className="text-xs text-muted-foreground">{session?.user?.email}</span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/profile/edit")}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    <span>प्रोफाइल संपादित करें / Edit Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer text-red-600"
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>साइन आउट / Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
