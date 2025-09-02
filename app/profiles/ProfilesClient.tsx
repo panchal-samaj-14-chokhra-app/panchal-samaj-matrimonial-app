@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ProfileListing } from "@/components/profile-listing"
 import { Loader2, User, Mail, Edit, LogOut } from "lucide-react"
@@ -148,15 +148,14 @@ export default function ProfilesClient() {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-orange-600">प्रोफाइल्स / Profiles</h1>
-              <p className="text-gray-600 mt-1">सभी सक्रिय मैट्रिमोनियल प्रोफाइल्स / All Active Matrimonial Profiles</p>
+            <div className="flex items-center gap-4">
+              <Image src="/logo.png" alt="Panchal Samaj Logo" width={60} height={60} className="rounded-full" />
+              <div>
+                <h1 className="text-3xl font-bold text-orange-600">प्रोफाइल्स / Profiles</h1>
+                <p className="text-gray-600 mt-1">सभी सक्रिय मैट्रिमोनियल प्रोफाइल्स / All Active Matrimonial Profiles</p>
+              </div>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/profile/create">
-                <Button className="bg-orange-600 hover:bg-orange-700">नई प्रोफाइल बनाएं / Create New Profile</Button>
-              </Link>
-
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="icon" className="rounded-full bg-transparent">
@@ -167,7 +166,7 @@ export default function ProfilesClient() {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">प्रोफाइल / Profile</p>
-                      <p className="text-xs leading-none text-muted-foreground">{session?.user?.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{session?.user?.email}</p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
