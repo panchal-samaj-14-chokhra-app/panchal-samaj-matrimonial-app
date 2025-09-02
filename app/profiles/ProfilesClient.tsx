@@ -8,14 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ProfileListing } from "@/components/profile-listing"
 import { Loader2, User, Mail, Edit, LogOut } from "lucide-react"
 import { useCheckUserExists } from "@/hooks/use-query-mutations"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { Card, CardContent } from "@/components/ui/card"
 
 // Sample profile data
 const profiles = [
@@ -111,6 +104,8 @@ export default function ProfilesClient() {
 
   console.log("[v0] ProfilesClient - profiles data:", profiles)
   console.log("[v0] ProfilesClient - profiles length:", profiles.length)
+  console.log("[v0] ProfilesClient - session:", session)
+  console.log("[v0] ProfilesClient - userExistsData:", userExistsData)
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -150,7 +145,7 @@ export default function ProfilesClient() {
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="flex items-center gap-4">
               <Image src="/logo.png" alt="Panchal Samaj Logo" width={60} height={60} className="rounded-full" />
               <div>
@@ -158,49 +153,64 @@ export default function ProfilesClient() {
                 <p className="text-gray-600 mt-1">सभी सक्रिय मैट्रिमोनियल प्रोफाइल्स / All Active Matrimonial Profiles</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="rounded-full bg-transparent">
-                    <User className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">प्रोफाइल / Profile</p>
-                      <p className="text-xs leading-none text-muted-foreground">{session?.user?.email}</p>
+
+            <Card className="w-full lg:w-80 border-orange-200 bg-orange-50">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-orange-800">प्रोफाइल / Profile</p>
+                    <p className="text-xs text-orange-600">{session?.user?.email}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 p-2 rounded bg-white/50">
+                    <Mail className="h-4 w-4 text-orange-600" />
+                    <div className="flex-1">
+                      <p className="text-xs font-medium text-orange-800">ईमेल / Email</p>
+                      <p className="text-xs text-orange-600">{session?.user?.email}</p>
                     </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Mail className="mr-2 h-4 w-4" />
-                    <div className="flex flex-col">
-                      <span className="text-sm">ईमेल / Email</span>
-                      <span className="text-xs text-muted-foreground">{session?.user?.email}</span>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/profile/edit")}>
-                    <Edit className="mr-2 h-4 w-4" />
-                    <span>प्रोफाइल संपादित करें / Edit Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="cursor-pointer text-red-600"
-                    onClick={() => signOut({ callbackUrl: "/login" })}
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>साइन आउट / Sign Out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 text-xs border-orange-300 text-orange-700 hover:bg-orange-100 bg-transparent"
+                      onClick={() => router.push("/profile/edit")}
+                    >
+                      <Edit className="h-3 w-3 mr-1" />
+                      संपादित करें / Edit
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 text-xs border-red-300 text-red-700 hover:bg-red-50 bg-transparent"
+                      onClick={() => signOut({ callbackUrl: "/login" })}
+                    >
+                      <LogOut className="h-3 w-3 mr-1" />
+                      साइन आउट / Sign Out
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <ProfileListing profiles={profiles} />
+        {profiles.length > 0 ? (
+          <ProfileListing profiles={profiles} />
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-xl">कोई प्रोफाइल उपलब्ध नहीं / No profiles available</p>
+          </div>
+        )}
       </div>
     </div>
   )
