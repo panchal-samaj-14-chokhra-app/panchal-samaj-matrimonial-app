@@ -7,7 +7,7 @@ import { ArrowLeft, Settings, Database, BarChart3 } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "प्रोफाइल ID प्रबंधन - पंचाल समाज 14 चोखरा मैट्रिमोनियल",
-  description: "प्रोफाइल IDs को प्रबंधित करें",
+  description: "प्रोफाइल IDs को प्रबंधित कर���ं",
 }
 
 // Sample statistics

@@ -160,7 +160,7 @@ export default function ProfilesClient() {
                 <p className="text-gray-600 mt-1">सभी सक्रिय मैट्रिमोनियल प्रोफाइल्स / All Active Matrimonial Profiles</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+           
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="icon" className="rounded-full bg-transparent">
@@ -196,7 +196,7 @@ export default function ProfilesClient() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
+       
           </div>
         </div>
       </div>
