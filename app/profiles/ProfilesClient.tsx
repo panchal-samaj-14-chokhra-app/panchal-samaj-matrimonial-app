@@ -111,8 +111,6 @@ export default function ProfilesClient() {
 
   console.log("[v0] ProfilesClient - profiles data:", profiles)
   console.log("[v0] ProfilesClient - profiles length:", profiles.length)
-  console.log("[v0] ProfilesClient - session:", session)
-  console.log("[v0] ProfilesClient - userExistsData:", userExistsData)
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -160,19 +158,14 @@ export default function ProfilesClient() {
                 <p className="text-gray-600 mt-1">सभी सक्रिय मैट्रिमोनियल प्रोफाइल्स / All Active Matrimonial Profiles</p>
               </div>
             </div>
-
-            <div className="flex items-center">
+            <div className="flex items-center gap-3">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 border-orange-200 hover:bg-orange-100 hover:border-orange-300"
-                  >
-                    <User className="h-4 w-4 text-orange-600" />
-                    <span className="text-sm font-medium text-orange-600">प्रोफाइल / Profile</span>
+                  <Button variant="outline" size="icon" className="rounded-full bg-transparent">
+                    <User className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 z-50">
+                <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">प्रोफाइल / Profile</p>
@@ -207,39 +200,7 @@ export default function ProfilesClient() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-6 p-6 bg-yellow-200 border-2 border-yellow-400 rounded-lg">
-          <h3 className="text-lg font-bold text-yellow-800 mb-2">🐛 Debug Information</h3>
-          <div className="space-y-2 text-yellow-800">
-            <p>
-              <strong>Profiles count:</strong> {profiles.length}
-            </p>
-            <p>
-              <strong>First profile:</strong> {profiles[0]?.name}
-            </p>
-            <p>
-              <strong>Session status:</strong> {status}
-            </p>
-            <p>
-              <strong>User exists:</strong> {userExistsData?.exists ? "Yes" : "No"}
-            </p>
-            <p>
-              <strong>User email:</strong> {session?.user?.email}
-            </p>
-          </div>
-        </div>
-
-        {profiles.length > 0 ? (
-          <div>
-            <p className="mb-4 text-green-600 font-semibold">
-              ✅ Rendering ProfileListing with {profiles.length} profiles
-            </p>
-            <ProfileListing profiles={profiles} />
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-red-600 text-xl">❌ No profiles to display</p>
-          </div>
-        )}
+        <ProfileListing profiles={profiles} />
       </div>
     </div>
   )
