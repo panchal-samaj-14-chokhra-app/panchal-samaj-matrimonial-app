@@ -160,14 +160,19 @@ export default function ProfilesClient() {
                 <p className="text-gray-600 mt-1">सभी सक्रिय मैट्रिमोनियल प्रोफाइल्स / All Active Matrimonial Profiles</p>
               </div>
             </div>
-           
+
+            <div className="flex items-center">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="rounded-full bg-transparent">
-                    <User className="h-4 w-4" />
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 border-orange-200 hover:bg-orange-100 hover:border-orange-300"
+                  >
+                    <User className="h-4 w-4 text-orange-600" />
+                    <span className="text-sm font-medium text-orange-600">प्रोफाइल / Profile</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-64 z-50">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">प्रोफाइल / Profile</p>
@@ -196,7 +201,7 @@ export default function ProfilesClient() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-       
+            </div>
           </div>
         </div>
       </div>
